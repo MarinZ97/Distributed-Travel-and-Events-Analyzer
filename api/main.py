@@ -29,6 +29,13 @@ def get_request_status(job_id: str):
         "status": JobStatus.PENDING
     }
 
+@app.get("/")
+def root():
+    return {
+        "service": "Distributed Travel and Events Analyzer",
+        "role": "API (Master)",
+        "status": "running"
+    }
 
 @app.get("/health")
 def health():
