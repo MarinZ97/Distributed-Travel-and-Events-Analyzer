@@ -15,3 +15,9 @@ services:
       - "8080:80"
     volumes:
       - ./infrastructure/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+
+  worker:
+      build:
+        context: ./worker
+      depends_on:
+        - api

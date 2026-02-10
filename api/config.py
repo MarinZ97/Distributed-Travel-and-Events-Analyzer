@@ -1,0 +1,3 @@
+import os
+
+TICKETMASTER_API_KEY = os.getenv("TICKETMASTER_API_KEY", "")

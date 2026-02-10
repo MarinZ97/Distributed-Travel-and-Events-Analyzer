@@ -1,6 +1,7 @@
 from pydantic import BaseModel
 from datetime import date
 from models import JobStatus
+from typing import Any, Optional
 
 class TravelRequest(BaseModel):
     city: str
@@ -13,3 +14,8 @@ class JobCreatedResponse(BaseModel):
 class JobStatusResponse(BaseModel):
     job_id: str
     status: JobStatus
+
+class JobResultResponse(BaseModel):
+    job_id: str
+    status: JobStatus
+    result: Optional[Any] = None
