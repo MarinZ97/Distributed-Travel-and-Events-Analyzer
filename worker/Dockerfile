@@ -5,6 +5,6 @@ WORKDIR /worker
 COPY requirements.txt .
 RUN pip install -r requirements.txt
 
-COPY worker.py .
+COPY celery_app.py tasks.py ./
 
-CMD ["python", "worker.py"]
+CMD ["celery", "-A", "celery_app", "worker", "--loglevel=INFO"]

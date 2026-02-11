@@ -5,9 +5,20 @@ from schemas import TravelRequest, JobCreatedResponse, JobStatusResponse, JobRes
 from models import  JobStatus
 from store import JOBS
 from config import TICKETMASTER_API_KEY
+import os
+from celery import Celery
+from celery.result import AsyncResult
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
+REDIS_URL = os.getenv("REDIS_URL", "redis://redis:6379/0")
+
+celery_client = Celery(
+    "api",
+    broker=REDIS_URL,
+    backend=REDIS_URL,
+)
 
 app = FastAPI(
     title="Distributed Travel and Events Analyzer",
@@ -23,44 +34,65 @@ def root():
         "status": "running"
     }
 
-@app.get("/health")
-def health():
-    return {"status": "ok"}
 
 
 @app.post("/requests", response_model=JobCreatedResponse, tags=["requests"])
 def create_request(request: TravelRequest):
-    job_id = str(uuid.uuid4())
+    payload = request.model_dump()
 
-    JOBS[job_id] = {
-        "status": JobStatus.PENDING,
-        "request": request.model_dump(),
-        "result": None
-    }
+    task = celery_client.send_task("process_travel_request", args=[payload])
+
+    logger.info(f"Enqueued job {task.id} for city={request.city}")
+    return {"job_id": task.id}
     
-    logger.info(f"Created job {job_id} for city={request.city}")
-    return {"job_id": job_id}
+
 
 @app.get("/requests/{job_id}", response_model=JobStatusResponse, tags=["requests"])
 def get_request_status(job_id: str):
-    job = JOBS.get(job_id)
-    if not job:
-        raise HTTPException(status_code=404, detail="Job not found")
+    result = AsyncResult(job_id, app=celery_client)
 
-    return {"job_id": job_id, "status": job["status"]}
+    state = result.state
+
+    if state == "PENDING":
+        status = JobStatus.PENDING
+    elif state in ("STARTED", "RETRY"):
+        status = JobStatus.RUNNING
+    elif state == "SUCCESS":
+        status = JobStatus.DONE
+    elif state == "FAILURE":
+        status = JobStatus.FAILED
+    else:
+        status = JobStatus.PENDING
+
+    return {"job_id": job_id, "status": status}
+    
+
 
 @app.get("/requests/{job_id}/result", response_model=JobResultResponse, tags=["requests"])
 def get_request_result(job_id: str):
-    job = JOBS.get(job_id)
-    if not job:
-        raise HTTPException(status_code=404, detail="Job not found")
+    result = AsyncResult(job_id, app=celery_client)
 
-    # Dummy result for now
+    if result.state == "PENDING":
+        return {"job_id": job_id, "status": JobStatus.PENDING, "result": None}
+
+    if result.state in ("STARTED", "RETRY"):
+        return {"job_id": job_id, "status": JobStatus.RUNNING, "result": None}
+
+    if result.state == "FAILURE":
+        return {
+            "job_id": job_id,
+            "status": JobStatus.FAILED,
+            "result": {"error": str(result.result)}
+        }
+
     return {
         "job_id": job_id,
-        "status": job["status"],
-        "result": job["result"]
+        "status": JobStatus.DONE,
+        "result": result.get(timeout=1)
     }
+
+
+
 
 @app.get("/config")
 def config_info():
