@@ -16,6 +16,11 @@ def process_travel_request(self, payload: dict) -> dict:
     # 10 sec for simulation
     time.sleep(10)
 
+    if not events:
+        note = "No events found in given periods"
+    else:
+        note = "Tickermaster events fetched successfully"
+
     return {
         "city": city,
         "date_from": date_from,
@@ -23,5 +28,5 @@ def process_travel_request(self, payload: dict) -> dict:
         "events": events,
         "flights_summary": None,
         "accommodations_summary": None,
-        "note": "Ticketmaster events fetched (if API key set)"
+        "note": note
     }
