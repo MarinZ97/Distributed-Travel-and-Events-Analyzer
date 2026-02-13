@@ -27,5 +27,6 @@ services:
       depends_on:
         - redis
       environment:
-      - REDIS_URL=redis://redis:6379/0
+        - REDIS_URL=redis://redis:6379/0
+        - TICKETMASTER_API_KEY=${TICKETMASTER_API_KEY}
       command: ["celery", "-A", "celery_app", "worker", "--loglevel=INFO"]

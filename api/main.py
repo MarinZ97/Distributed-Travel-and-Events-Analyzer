@@ -38,7 +38,7 @@ def root():
 
 @app.post("/requests", response_model=JobCreatedResponse, tags=["requests"])
 def create_request(request: TravelRequest):
-    payload = request.model_dump()
+    payload = request.model_dump(mode="json")
 
     task = celery_client.send_task("process_travel_request", args=[payload])
 
