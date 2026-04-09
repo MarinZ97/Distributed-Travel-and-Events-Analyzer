@@ -40,9 +40,9 @@ def summarize_flights(city: str, date_from: str, date_to: str):
         "destination_city": city,
         "count": filtered.height,
         "min_price": filtered["price"].min(),
-        "avg_price": filtered["price"].mean(),
+        "avg_price": round(filtered["price"].mean(), 2),
         "min_duration_minutes": filtered["duration_minutes"].min(),
-        "avg_duration_minutes": filtered["duration_minutes"].mean(),
+        "avg_duration_minutes": round(filtered["duration_minutes"].mean(), 2),
         "top_cheapest_options": cheapest_options,
     }
 
