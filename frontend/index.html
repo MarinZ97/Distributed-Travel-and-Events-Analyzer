@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Distributed Travel and Events Analyzer</title>
+    <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+    <div class="container">
+        <h1>Distributed Travel and Events Analyzer</h1>
+        <p class="subtitle">
+            Search events, flight options and accommodation options for a selected city and date range.
+        </p>
+
+        <form id="travel-form" class="card">
+            <div class="form-group">
+                <label for="city">City</label>
+                <input type="text" id="city" name="city" placeholder="" required />
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="date_from">Date from</label>
+                    <input type="date" id="date_from" name="date_from" required />
+                </div>
+
+                <div class="form-group">
+                    <label for="date_to">Date to</label>
+                    <input type="date" id="date_to" name="date_to" required />
+                </div>
+            </div>
+
+            <button type="submit">Analyze trip</button>
+        </form>
+
+        <div id="status" class="status hidden"></div>
+        <div id="error" class="error hidden"></div>
+
+        <div id="results" class="results hidden">
+            <section class="card">
+                <h2>Events</h2>
+                <div id="events-content"></div>
+            </section>
+
+            <section class="card">
+                <h2>Flight options</h2>
+                <div id="flights-content"></div>
+            </section>
+
+            <section class="card">
+                <h2>Accommodation options</h2>
+                <div id="accommodations-content"></div>
+            </section>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
