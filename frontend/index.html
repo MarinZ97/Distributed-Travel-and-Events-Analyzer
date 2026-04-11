@@ -4,57 +4,109 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Distributed Travel and Events Analyzer</title>
-    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="style.css?v=6" />
 </head>
 <body>
-    <div class="container">
-        <h1>Distributed Travel and Events Analyzer</h1>
-        <p class="subtitle">
-            Search events, flight options and accommodation options for a selected city and date range.
-        </p>
+    <div class="page-background"></div>
 
-        <form id="travel-form" class="card">
-            <div class="form-group">
-                <label for="city">City</label>
-                <input type="text" id="city" name="city" placeholder="" required />
+    <main class="page-container">
+        <header class="hero">
+            <div class="hero-content">
+                <span class="hero-badge">Distributed systems project</span>
+                <h1>Distributed Travel and Events Analyzer</h1>
+                <p class="hero-subtitle">
+                    Find events, flight options and accommodation suggestions for a selected city and date range.
+                </p>
             </div>
+        </header>
 
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="date_from">Date from</label>
-                    <input type="date" id="date_from" name="date_from" required />
+        <section class="search-shell">
+            <div class="search-card">
+                <div class="search-card-header">
+                    <div>
+                        <p class="section-kicker">Trip planner</p>
+                        <h2>Plan your next city break</h2>
+                        <p class="section-description">
+                            Choose destination city and travel period to run asynchronous analysis.
+                        </p>
+                    </div>
                 </div>
 
-                <div class="form-group">
-                    <label for="date_to">Date to</label>
-                    <input type="date" id="date_to" name="date_to" required />
+                <form id="travel-form" class="travel-form">
+                    <div class="form-group city-group">
+                        <label for="city">City</label>
+                        <input type="text" id="city" name="city" placeholder="e.g. Berlin" required />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="date_from">Date from</label>
+                        <input type="date" id="date_from" name="date_from" required />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="date_to">Date to</label>
+                        <input type="date" id="date_to" name="date_to" required />
+                    </div>
+
+                    <div class="form-actions">
+                        <button id="submit-btn" type="submit">Analyze trip</button>
+                    </div>
+                </form>
+            </div>
+        </section>
+
+        <div id="status" class="message status hidden"></div>
+        <div id="error" class="message error hidden"></div>
+
+        <section id="results" class="results hidden">
+            <div class="results-heading">
+                <div>
+                    <p class="section-kicker">Overview</p>
+                    <h2>Trip summary</h2>
+                    <p id="results-caption" class="section-description"></p>
                 </div>
             </div>
 
-            <button type="submit">Analyze trip</button>
-        </form>
+            <div id="overview-content" class="summary-grid"></div>
 
-        <div id="status" class="status hidden"></div>
-        <div id="error" class="error hidden"></div>
+            <div class="dashboard-grid">
+                <section class="panel">
+                    <div class="panel-header">
+                        <div>
+                            <p class="section-kicker section-kicker-blue">Flights</p>
+                            <h2>Flight options</h2>
+                        </div>
+                    </div>
+                    <div id="flights-content"></div>
+                </section>
 
-        <div id="results" class="results hidden">
-            <section class="card">
-                <h2>Events</h2>
+                <section class="panel">
+                    <div class="panel-header">
+                        <div>
+                            <p class="section-kicker section-kicker-purple">Stay</p>
+                            <h2>Accommodation options</h2>
+                        </div>
+                    </div>
+                    <div id="accommodations-content"></div>
+                </section>
+            </div>
+
+            <section class="panel panel-wide">
+                <div class="panel-header panel-header-row">
+                    <div>
+                        <p class="section-kicker section-kicker-pink">Events</p>
+                        <h2>Available events</h2>
+                    </div>
+
+                    <button id="toggle-events-btn" class="secondary-btn hidden" type="button">
+                        Show more
+                    </button>
+                </div>
                 <div id="events-content"></div>
             </section>
+        </section>
+    </main>
 
-            <section class="card">
-                <h2>Flight options</h2>
-                <div id="flights-content"></div>
-            </section>
-
-            <section class="card">
-                <h2>Accommodation options</h2>
-                <div id="accommodations-content"></div>
-            </section>
-        </div>
-    </div>
-
-    <script src="app.js"></script>
+    <script src="app.js?v=6"></script>
 </body>
 </html>
