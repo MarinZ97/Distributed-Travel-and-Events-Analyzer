@@ -2,7 +2,7 @@ import polars as pl
 from config import ACCOMMODATIONS_DATASET_PATH
 
 
-def summarize_accommodations(city: str, date_from: str, date_to: str):
+def summarize_accommodations(city: str, date_from: str, date_to: str, sort_mode: str= "cheapest", limit: int = 5):
     try:
         df = pl.read_csv(ACCOMMODATIONS_DATASET_PATH)
     except Exception as e:
@@ -12,13 +12,10 @@ def summarize_accommodations(city: str, date_from: str, date_to: str):
     filtered = df.filter(
         pl.col("destination_city").str.to_lowercase() == city.lower()
     )
-
     if filtered.height == 0:
         return None, f"No accommodation options found for city: {city}"
 
-    cheapest_options = (
-        filtered.sort("price_per_stay")
-        .select(
+    selected = filtered.select(
             [
                 "hotel_name",
                 "destination_city",
@@ -28,10 +25,22 @@ def summarize_accommodations(city: str, date_from: str, date_to: str):
                 "stars",
                 "breakfast",
             ]
-        )
-        .head(5)
-        .to_dicts()
     )
+    
+    if sort_mode == "expensive":
+        sorted_options = selected.sort("price_per_stay", descending = True)
+        note = "Accommodation options processed successfully (sorted by highest price)"
+    elif sort_mode == "best_rating":
+        sorted_options = selected.sort(
+            by = ["rating_score", "stars", "price_per_stay"],
+            descending = [True, True, False],
+        )
+        note = "Accommodation options processed successfully (sorted by best rating)"
+    else:
+        sorted_options = selected.sort("price_per_stay")
+        note = "Accommodation options processed successfully (sorted by lowest price)"
+
+    top_options = sorted_options.head(limit).to_dicts()
 
     summary = {
         "destination_city": city,
@@ -39,7 +48,9 @@ def summarize_accommodations(city: str, date_from: str, date_to: str):
         "min_price_per_stay": filtered["price_per_stay"].min(),
         "avg_price_per_stay": round(filtered["price_per_stay"].mean(), 2),
         "avg_rating_score": round(filtered["rating_score"].mean(), 2),
-        "top_cheapest_options": cheapest_options,
+        "sort_mode": sort_mode,
+        "options_limit": limit,
+        "top_options": top_options,
     }
 
-    return summary, "Accommodation options processed successfully"
+    return summary, note

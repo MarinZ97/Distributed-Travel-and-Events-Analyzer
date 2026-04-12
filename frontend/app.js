@@ -113,6 +113,17 @@ function getEventSortValue(event) {
     return parsed.getTime();
 }
 
+function getFlightSortLabel(sortMode) {
+    if (sortMode === "expensive") return "Top most expensive options";
+    return "Top cheapest options";
+}
+
+function getAccommodationSortLabel(sortMode) {
+    if (sortMode === "expensive") return "Top most expensive options";
+    if (sortMode === "best_rating") return "Top best rated options";
+    return "Top cheapest options";
+}
+
 function createSummaryCard(label, value, subvalue = "", extraClass = "") {
     return `
         <div class="summary-box ${extraClass}">
@@ -174,12 +185,12 @@ function renderFlights(summary, note) {
         return;
     }
 
-    const cheapestOptions = summary.top_cheapest_options || [];
+    const flightOptions = summary.top_options || [];
 
-    const optionCards = cheapestOptions.length
+    const optionCards = flightOptions.length
         ? `
             <div class="item-list">
-                ${cheapestOptions.map((option) => `
+                ${flightOptions.map((option) => `
                     <article class="item flight-item">
                         <div class="price-chip">${formatPrice(option.price)}</div>
                         <h3>${escapeHtml(option.departure_city || "-")} → ${escapeHtml(option.destination_city || "-")}</h3>
@@ -205,7 +216,7 @@ function renderFlights(summary, note) {
             ${createSummaryCard("Average duration", `${escapeHtml(formatNumber(summary.avg_duration_minutes))} min`)}
         </div>
 
-        <h3 class="subsection-title">Top cheapest options</h3>
+        <h3 class="subsection-title">>${getFlightSortLabel(summary.sort_mode)}</h3>
         ${optionCards}
     `;
 }
@@ -216,12 +227,12 @@ function renderAccommodations(summary, note) {
         return;
     }
 
-    const cheapestOptions = summary.top_cheapest_options || [];
+    const accommodationOptions = summary.top_options || [];
 
-    const optionCards = cheapestOptions.length
+    const optionCards = accommodationOptions.length
         ? `
             <div class="item-list">
-                ${cheapestOptions.map((option) => `
+                ${accommodationOptions.map((option) => `
                     <article class="item stay-item">
                         <div class="price-chip">${formatPrice(option.price_per_stay)}</div>
                         <h3>${escapeHtml(option.hotel_name || "-")}</h3>
@@ -247,7 +258,7 @@ function renderAccommodations(summary, note) {
             ${createSummaryCard("Average rating", escapeHtml(formatNumber(summary.avg_rating_score)))}
         </div>
 
-        <h3 class="subsection-title">Top cheapest options</h3>
+        <h3 class="subsection-title">${getAccommodationSortLabel(summary.sort_mode)}</h3>
         ${optionCards}
     `;
 }
@@ -344,6 +355,9 @@ form.addEventListener("submit", async (event) => {
     const city = document.getElementById("city").value.trim();
     const dateFrom = document.getElementById("date_from").value;
     const dateTo = document.getElementById("date_to").value;
+    const flightSort = document.getElementById("flight_sort").value.trim();
+    const accommodationSort = document.getElementById("accommodation_sort").value;
+    const optionsLimit = Number(document.getElementById("options_limit").value);
 
     if (!city || !dateFrom || !dateTo) {
         showError("Please fill in all fields.");
@@ -368,6 +382,9 @@ form.addEventListener("submit", async (event) => {
                 city: city,
                 date_from: dateFrom,
                 date_to: dateTo,
+                flight_sort: flightSort,
+                accommodation_sort: accommodationSort,
+                options_limit: optionsLimit,
             }),
         });
 

@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Distributed Travel and Events Analyzer</title>
-    <link rel="stylesheet" href="style.css?v=6" />
+    <link rel="stylesheet" href="style.css?v=8" />
 </head>
 <body>
     <div class="page-background"></div>
@@ -46,6 +46,31 @@
                     <div class="form-group">
                         <label for="date_to">Date to</label>
                         <input type="date" id="date_to" name="date_to" required />
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="flight_sort">Flight sort</label>
+                        <select id="flight_sort" name="flight_sort">
+                            <option value="cheapest">Cheapest</option>
+                            <option value="expensive">Most expensive</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="accommodation_sort">Accommodation sort</label>
+                        <select id="accommodation_sort" name="accommodation_sort">
+                            <option value="cheapest">Cheapest</option>
+                            <option value="expensive">Most expensive</option>
+                            <option value="best_rating">Best rating</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="options_limit">Options limit</label>
+                        <select id="options_limit" name="options_limit">
+                            <option value="5">5</option>
+                            <option value="10">10</option>
+                        </select>
                     </div>
 
                     <div class="form-actions">
@@ -107,6 +132,6 @@
         </section>
     </main>
 
-    <script src="app.js?v=6"></script>
+    <script src="app.js?v=8"></script>
 </body>
 </html>

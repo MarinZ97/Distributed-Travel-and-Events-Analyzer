@@ -185,8 +185,19 @@ body {
 
 .travel-form {
     display: grid;
-    grid-template-columns: 2fr 1fr 1fr auto;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 16px;
+    align-items: end;
+}
+
+.city-group {
+    grid-column: span 3;
+}
+
+.form-actions {
+    grid-column: span 3;
+    display: flex;
+    justify-content: flex-end;
     align-items: end;
 }
 
@@ -222,6 +233,24 @@ body {
 .form-actions {
     display: flex;
     align-items: end;
+}
+
+.form-group select {
+    width: 100%;
+    min-height: 50px;
+    padding: 12px 14px;
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.96);
+    color: var(--text);
+    font-size: 15px;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.form-group select:focus {
+    outline: none;
+    border-color: #8d97ff;
+    box-shadow: 0 0 0 4px rgba(91, 103, 243, 0.12);
 }
 
 button {
