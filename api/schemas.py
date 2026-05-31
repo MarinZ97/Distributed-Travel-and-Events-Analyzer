@@ -5,6 +5,7 @@ from pydantic import BaseModel
 
 class TravelRequest(BaseModel):
     city: str
+    departure_city: Optional[str] = None
     date_from: date
     date_to: date
     flight_sort: Literal["cheapest", "expensive"] = "cheapest"

@@ -4,7 +4,7 @@ try:
 except ImportError:
     from config import FLIGHTS_DATASET_PATH
 
-def summarize_flights(city: str, date_from: str, date_to: str, sort_mode: str = "cheapest", limit: int = 5):
+def summarize_flights(city: str, date_from: str, date_to: str, sort_mode: str = "cheapest", limit: int = 5, departure_city: str | None = None):
     try:
         df = pl.read_csv(FLIGHTS_DATASET_PATH)
     except Exception as e:
@@ -14,10 +14,19 @@ def summarize_flights(city: str, date_from: str, date_to: str, sort_mode: str = 
     # Pretpostavimo da CSV ima kolone:
     # destination_city, departure_date, price
 
-    filtered = df.filter(pl.col("destination_city").str.to_lowercase() == city.lower())
-    if filtered.height == 0:
-        return None, "No flight data found for given city and perid"
+    filtered = df.filter(
+        pl.col("destination_city").str.to_lowercase() == city.lower()
+    )
 
+    if departure_city:
+        filtered = filtered.filter(
+            pl.col("departure_city").str.to_lowercase() == departure_city.lower()
+        )
+
+    if filtered.height == 0:
+        if departure_city:
+            return None, f"No flight data found for route {departure_city} → {city}"
+        return None, "No flight data found for given destination city"
     selected = filtered.select (
             [
                 "departure_city",
@@ -40,8 +49,12 @@ def summarize_flights(city: str, date_from: str, date_to: str, sort_mode: str = 
 
     top_options = sorted_options.head(limit).to_dicts()
 
+    if departure_city:
+        note += f"for route {departure_city} -> {city}"
+
     summary = {
         "destination_city": city,
+        "departure_city": departure_city,
         "count": filtered.height,
         "min_price": filtered["price"].min(),
         "avg_price": round(filtered["price"].mean(), 2),

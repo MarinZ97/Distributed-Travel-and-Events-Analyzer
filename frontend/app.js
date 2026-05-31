@@ -154,6 +154,7 @@ function renderOverview(resultData) {
 
     overviewContent.innerHTML = [
         createSummaryCard("Destination", escapeHtml(resultData?.city || "-"), "Selected city"),
+        createSummaryCard("Departure city", escapeHtml(resultData?.departure_city || "Any"), "Flight filter"),
         createSummaryCard("Date range", `${formatShortDate(resultData?.date_from)} → ${formatShortDate(resultData?.date_to)}`, "","summary-box-compact"),
         createSummaryCard("Events found", escapeHtml(String(events.length)), "Ticketmaster results"),
         createSummaryCard(
@@ -185,7 +186,7 @@ function renderFlights(summary, note) {
         return;
     }
 
-    const flightOptions = summary.top_options || [];
+    const flightOptions = summary.top_options || summary.top_cheapest_options || [];
 
     const optionCards = flightOptions.length
         ? `
@@ -209,6 +210,7 @@ function renderFlights(summary, note) {
 
         <div class="summary-grid">
             ${createSummaryCard("Destination", escapeHtml(summary.destination_city || "-"))}
+            ${createSummaryCard("Departure city", escapeHtml(summary.departure_city || "Any"))}
             ${createSummaryCard("Options found", escapeHtml(formatNumber(summary.count, 0)))}
             ${createSummaryCard("Minimum price", formatPrice(summary.min_price))}
             ${createSummaryCard("Average price", formatPrice(summary.avg_price))}
@@ -216,7 +218,7 @@ function renderFlights(summary, note) {
             ${createSummaryCard("Average duration", `${escapeHtml(formatNumber(summary.avg_duration_minutes))} min`)}
         </div>
 
-        <h3 class="subsection-title">>${getFlightSortLabel(summary.sort_mode)}</h3>
+        <h3 class="subsection-title">${getFlightSortLabel(summary.sort_mode)}</h3>
         ${optionCards}
     `;
 }
@@ -353,6 +355,7 @@ form.addEventListener("submit", async (event) => {
     clearResults();
 
     const city = document.getElementById("city").value.trim();
+    const departureCity = document.getElementById("departure_city").value.trim();
     const dateFrom = document.getElementById("date_from").value;
     const dateTo = document.getElementById("date_to").value;
     const flightSort = document.getElementById("flight_sort").value.trim();
@@ -380,6 +383,7 @@ form.addEventListener("submit", async (event) => {
             },
             body: JSON.stringify({
                 city: city,
+                departure_city: departureCity || null,
                 date_from: dateFrom,
                 date_to: dateTo,
                 flight_sort: flightSort,
@@ -397,8 +401,12 @@ form.addEventListener("submit", async (event) => {
 
         hideStatus();
         resultsBox.classList.remove("hidden");
-        resultsCaption.textContent = `${resultData.city || city} | ${formatShortDate(dateFrom)} → ${formatShortDate(dateTo)}`;
 
+        const routeLabel = departureCity
+            ? `${departureCity} → ${resultData.city || city}`
+            : `${resultData.city || city}`;
+        resultsCaption.textContent = `${routeLabel} | ${formatShortDate(dateFrom)} → ${formatShortDate(dateTo)}`;
+        
         renderOverview(resultData);
         renderFlights(resultData.flights_summary, resultData.notes?.flights);
         renderAccommodations(resultData.accommodations_summary, resultData.notes?.accommodations);

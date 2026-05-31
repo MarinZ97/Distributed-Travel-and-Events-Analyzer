@@ -10,13 +10,14 @@ def process_travel_request(self, payload: dict) -> dict:
     self.update_state(state = "STARTED")
 
     city = payload.get("city")
+    departure_city = payload.get("departure_city")
     date_from = payload.get("date_from")
     date_to = payload.get("date_to")
     flight_sort = payload.get("flight_sort", "cheapest")
     accommodation_sort = payload.get("accommodation_sort", "cheapest")
     options_limit = payload.get("options_limit", 5)
     events, events_note = fetch_events(city = city, date_from = date_from, date_to = date_to, size = 20)
-    flights_summary, flights_note = summarize_flights(city, date_from, date_to, sort_mode = flight_sort, limit = options_limit)
+    flights_summary, flights_note = summarize_flights(city, date_from, date_to, sort_mode = flight_sort, limit = options_limit, departure_city = departure_city)
     accommodations_summary, accommodations_note = summarize_accommodations(city, date_from, date_to, sort_mode = accommodation_sort, limit = options_limit)
 
     # 10 sec for simulation
@@ -25,6 +26,7 @@ def process_travel_request(self, payload: dict) -> dict:
 
     return {
         "city": city,
+        "departure_city": departure_city,
         "date_from": date_from,
         "date_to": date_to,
         "events": events,
