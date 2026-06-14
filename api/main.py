@@ -6,8 +6,8 @@ from models import  JobStatus
 from store import JOBS
 from config import TICKETMASTER_API_KEY
 import os
-from celery import Celery
-from celery.result import AsyncResult
+from celery import Celery  # type: ignore[import]
+from celery.result import AsyncResult  # type: ignore[import]
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)

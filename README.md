@@ -111,6 +111,10 @@ Za pokretanje projekta potrebno je imati instalirano:
 
 ## Pokretanje projekta
 
+Nakon pokretanja aplikacija je dostupna na:
+
+`http://localhost:8080`
+
 Projekt se pokreće iz root foldera naredbom:
 
 ```bash
